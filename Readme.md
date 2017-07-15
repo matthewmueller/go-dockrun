@@ -1,6 +1,6 @@
 # dockrun
 
-[![GoDoc](https://godoc.org/matthewmueller/dockrun?status.svg)](https://godoc.org/github.com/matthewmueller/dockrun)
+[![GoDoc](https://godoc.org/matthewmueller/go-dockrun?status.svg)](https://godoc.org/github.com/matthewmueller/go-dockrun)
 
 Simple container testing
 
