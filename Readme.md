@@ -7,7 +7,7 @@ Simple container testing
 ## Install
 
 ```
-go get github.com/matthewmueller/dockrun
+go get github.com/matthewmueller/go-dockrun
 ```
 
 ## Example
