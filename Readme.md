@@ -27,7 +27,7 @@ if err != nil {
 }
 defer container.Kill()
 
-err = container.Wait(ctx, "http://localhost:9222")
+err = container.Check(ctx, "http://localhost:9222")
 if err != nil {
   log.Fatal(err)
 }
