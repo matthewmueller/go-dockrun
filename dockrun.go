@@ -2,6 +2,7 @@ package dockrun
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"net/url"
@@ -101,11 +102,12 @@ func (c *Container) Run(ctx context.Context, cmd ...string) (*Runner, error) {
 				// Hostname:     conf.Hostname,
 				// Domainname:   conf.Domainname,
 				// User:         conf.User,
-				Tty:          true,
+				// Tty:          true,
 				ExposedPorts: exposedPorts,
 			},
 			HostConfig: &docker.HostConfig{
 				PortBindings: portBindings,
+				CapAdd:       []string{"SYS_ADMIN"},
 			},
 		},
 	)
@@ -127,6 +129,17 @@ func (c *Container) Run(ctx context.Context, cmd ...string) (*Runner, error) {
 		client:    c.client,
 		container: cjson,
 	}, nil
+}
+
+// Wait until the container exits
+func (r *Runner) Wait() (err error) {
+	code, err := r.client.WaitContainer(r.container.ID)
+	if err != nil {
+		return err
+	} else if code != 0 {
+		return fmt.Errorf("container exited with error code: %d", code)
+	}
+	return nil
 }
 
 // Stop the container and remove it
@@ -171,8 +184,8 @@ func (r *Runner) Kill() (err error) {
 	return err
 }
 
-// Wait for a container to become ready
-func (r *Runner) Wait(ctx context.Context, addr string) (err error) {
+// Check to see if the container is ready
+func (r *Runner) Check(ctx context.Context, addr string) (err error) {
 	b := backo(ctx)
 
 	u, err := url.Parse(addr)

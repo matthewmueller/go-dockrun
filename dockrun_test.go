@@ -3,6 +3,7 @@ package dockrun_test
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -24,15 +25,14 @@ func TestContainer(t *testing.T) {
 	defer cancel()
 
 	container, err := client.
-		Container("yukinying/chrome-headless:latest", "chromium").
+		Container("yukinying/chrome-headless-browser:latest", "chromium").
 		Expose("9222:9222").
 		Run(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer container.Kill()
 
-	err = container.Wait(ctx, "http://localhost:9222")
+	err = container.Check(ctx, "http://localhost:9222")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,4 +89,17 @@ func TestContainer(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, "\"Google\"", string(reply.Result.Value))
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		container.Wait()
+		wg.Done()
+	}()
+
+	if e := container.Kill(); e != nil {
+		t.Fatal(e)
+	}
+
+	wg.Wait()
 }
