@@ -3,6 +3,7 @@ package dockrun
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -129,6 +130,19 @@ func (c *Container) Run(ctx context.Context, cmd ...string) (*Runner, error) {
 		client:    c.client,
 		container: cjson,
 	}, nil
+}
+
+// Logs streams the container logs
+func (r *Runner) Logs(ctx context.Context, stdout io.Writer, stderr io.Writer) error {
+	return r.client.Logs(docker.LogsOptions{
+		Follow:       true,
+		Container:    r.container.ID,
+		Context:      ctx,
+		Stdout:       true,
+		Stderr:       true,
+		OutputStream: stdout,
+		ErrorStream:  stderr,
+	})
 }
 
 // Wait until the container exits
