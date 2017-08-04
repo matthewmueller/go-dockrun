@@ -36,7 +36,14 @@ func TestContainer(t *testing.T) {
 
 	// run in a goroutine
 	go func() {
-		if e := container.Logs(ctx, os.Stdout, os.Stderr); e != nil {
+		if e := container.Stdout(ctx, os.Stdout); e != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	// run in a goroutine
+	go func() {
+		if e := container.Stderr(ctx, os.Stderr); e != nil {
 			t.Fatal(err)
 		}
 	}()

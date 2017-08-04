@@ -132,16 +132,27 @@ func (c *Container) Run(ctx context.Context, cmd ...string) (*Runner, error) {
 	}, nil
 }
 
-// Logs streams the container logs
-func (r *Runner) Logs(ctx context.Context, stdout io.Writer, stderr io.Writer) error {
+// Stdout gets the standard output
+func (r *Runner) Stdout(ctx context.Context, stdout io.Writer) error {
 	return r.client.Logs(docker.LogsOptions{
 		Follow:       true,
 		Container:    r.container.ID,
 		Context:      ctx,
 		Stdout:       true,
-		Stderr:       true,
+		Stderr:       false,
 		OutputStream: stdout,
-		ErrorStream:  stderr,
+	})
+}
+
+// Stderr gets the standard error
+func (r *Runner) Stderr(ctx context.Context, stderr io.Writer) error {
+	return r.client.Logs(docker.LogsOptions{
+		Follow:      true,
+		Container:   r.container.ID,
+		Context:     ctx,
+		Stdout:      false,
+		Stderr:      true,
+		ErrorStream: stderr,
 	})
 }
 
